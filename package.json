@@ -13,7 +13,7 @@
     "typescript": "^5.0.4"
   },
   "scripts": {
-    "build": "ncc build src/index.ts -o dist --transpile-only --minify",
+    "build": "esbuild src/index.ts --outfile=dist/index.js --bundle --target=node14 --platform=node",
     "test": "jest",
     "test:watch": "yarn test --watch",
     "changeset": "changeset",
@@ -24,6 +24,7 @@
     "node": ">= 16"
   },
   "dependencies": {
+    "esbuild": "0.17.19",
     "@actions/core": "^1.10.0",
     "@actions/exec": "^1.1.1",
     "@actions/github": "^5.1.1",

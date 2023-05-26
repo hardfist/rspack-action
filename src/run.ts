@@ -320,7 +320,7 @@ export async function runVersion({
   let branch = github.context.ref.replace("refs/heads/", "");
   let versionBranch = `changeset-release/${branch}`;
 
-  let { preState } = await readChangesetState(cwd);
+  // let { preState } = await readChangesetState(cwd);
 
   await gitUtils.switchToMaybeExistingBranch(versionBranch);
   await gitUtils.reset(github.context.sha);
@@ -362,12 +362,12 @@ export async function runVersion({
     })
   );
 
-  const finalPrTitle = `${prTitle}${!!preState ? ` (${preState.tag})` : ""}`;
+  const finalPrTitle = `${prTitle}`;
 
   // project with `commit: true` setting could have already committed files
   if (!(await gitUtils.checkIfClean())) {
-    const finalCommitMessage = `${commitMessage}${
-      !!preState ? ` (${preState.tag})` : ""
+    const finalCommitMessage = `${commitMessage}
+      
     }`;
     await gitUtils.commitAll(finalCommitMessage);
   }
@@ -383,7 +383,6 @@ export async function runVersion({
 
   let prBody = await getVersionPrBody({
     hasPublishScript,
-    preState,
     branch,
     changedPackagesInfo,
     prBodyMaxCharacters,
