@@ -36531,12 +36531,17 @@ ${info3.content}`)
   }
   return fullMessage;
 }
+async function getCurrentVersion(root) {
+  const pkgPath = import_path.default.resolve(root, "package.json");
+  const pkg = require(pkgPath);
+  return pkg.version;
+}
 async function runVersion({
   script,
   githubToken,
   cwd = process.cwd(),
-  prTitle = "Version Packages",
-  commitMessage = "Version Packages",
+  prTitle = "Release Packages",
+  commitMessage = "Reelase Packages",
   hasPublishScript = false,
   prBodyMaxCharacters = MAX_CHARACTERS_PER_MESSAGE
 }) {
@@ -36577,11 +36582,10 @@ async function runVersion({
       };
     })
   );
-  const finalPrTitle = `${prTitle}`;
+  const currentVersion = getCurrentVersion(process.cwd());
+  const finalPrTitle = `${prTitle}:${currentVersion}`;
   if (!await checkIfClean()) {
-    const finalCommitMessage = `${commitMessage}
-      
-    }`;
+    const finalCommitMessage = `${commitMessage}:${currentVersion}`;
     await commitAll(finalCommitMessage);
   }
   await push(versionBranch, { force: true });
