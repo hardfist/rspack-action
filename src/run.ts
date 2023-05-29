@@ -305,12 +305,17 @@ type RunVersionResult = {
   pullRequestNumber: number;
 };
 
+export async function getCurrentVersion(root: string) {
+  const pkgPath = path.resolve(root, "package.json");
+  const pkg = require(pkgPath);
+  return pkg.version;
+}
 export async function runVersion({
   script,
   githubToken,
   cwd = process.cwd(),
-  prTitle = "Version Packages",
-  commitMessage = "Version Packages",
+  prTitle = "Release Packages",
+  commitMessage = "Reelase Packages",
   hasPublishScript = false,
   prBodyMaxCharacters = MAX_CHARACTERS_PER_MESSAGE,
 }: VersionOptions): Promise<RunVersionResult> {
@@ -361,14 +366,12 @@ export async function runVersion({
       };
     })
   );
-
-  const finalPrTitle = `${prTitle}`;
+  const currentVersion = getCurrentVersion(process.cwd());
+  const finalPrTitle = `${prTitle}:${currentVersion}`;
 
   // project with `commit: true` setting could have already committed files
   if (!(await gitUtils.checkIfClean())) {
-    const finalCommitMessage = `${commitMessage}
-      
-    }`;
+    const finalCommitMessage = `${commitMessage}:${currentVersion}`;
     await gitUtils.commitAll(finalCommitMessage);
   }
 
