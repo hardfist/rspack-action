@@ -366,7 +366,7 @@ export async function runVersion({
       };
     })
   );
-  const currentVersion = getCurrentVersion(process.cwd());
+  const currentVersion = await getCurrentVersion(process.cwd());
   const finalPrTitle = `${prTitle}:${currentVersion}`;
 
   // project with `commit: true` setting could have already committed files
