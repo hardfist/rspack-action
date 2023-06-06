@@ -226,9 +226,7 @@ type GetMessageOptions = {
   hasPublishScript: boolean;
   branch: string;
   changedPackagesInfo: {
-    highestLevel: number;
     private: boolean;
-    content: string;
     header: string;
   }[];
   prBodyMaxCharacters: number;
@@ -262,7 +260,7 @@ export async function getVersionPrBody({
     messageHeader,
     messagePrestate,
     messageReleasesHeading,
-    ...changedPackagesInfo.map((info) => `${info.header}\n\n${info.content}`),
+    ...changedPackagesInfo.map((info) => `${info.header}`),
   ].join("\n");
 
   // Check that the message does not exceed the size limit.
@@ -352,16 +350,8 @@ export async function runVersion({
   let changedPackages = await getChangedPackages(cwd, versionsByDirectory);
   let changedPackagesInfoPromises = Promise.all(
     changedPackages.map(async (pkg) => {
-      let changelogContents = await fs.readFile(
-        path.join(pkg.dir, "CHANGELOG.md"),
-        "utf8"
-      );
-
-      let entry = getChangelogEntry(changelogContents, pkg.packageJson.version);
       return {
-        highestLevel: entry.highestLevel,
         private: !!pkg.packageJson.private,
-        content: entry.content,
         header: `## ${pkg.packageJson.name}@${pkg.packageJson.version}`,
       };
     })

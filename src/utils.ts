@@ -87,12 +87,9 @@ export function getChangelogEntry(changelog: string, version: string) {
 }
 
 export function sortTheThings(
-  a: { private: boolean; highestLevel: number },
-  b: { private: boolean; highestLevel: number }
+  a: { private: boolean },
+  b: { private: boolean }
 ) {
-  if (a.private === b.private) {
-    return b.highestLevel - a.highestLevel;
-  }
   if (a.private) {
     return 1;
   }

@@ -36371,12 +36371,6 @@ var import_remark_parse = __toESM(require_remark_parse());
 var import_remark_stringify = __toESM(require_remark_stringify());
 var import_mdast_util_to_string = __toESM(require_mdast_util_to_string());
 var import_get_packages = __toESM(require_get_packages_cjs());
-var BumpLevels = {
-  dep: 0,
-  patch: 1,
-  minor: 2,
-  major: 3
-};
 async function getVersionsByDirectory(cwd) {
   let { packages } = await (0, import_get_packages.getPackages)(cwd);
   return new Map(packages.map((x) => [x.dir, x.packageJson.version]));
@@ -36392,49 +36386,7 @@ async function getChangedPackages(cwd, previousVersions) {
   }
   return [...changedPackages];
 }
-function getChangelogEntry(changelog, version2) {
-  let ast = (0, import_unified.default)().use(import_remark_parse.default).parse(changelog);
-  let highestLevel = BumpLevels.dep;
-  let nodes = ast.children;
-  let headingStartInfo;
-  let endIndex;
-  for (let i = 0; i < nodes.length; i++) {
-    let node = nodes[i];
-    if (node.type === "heading") {
-      let stringified = (0, import_mdast_util_to_string.default)(node);
-      let match = stringified.toLowerCase().match(/(major|minor|patch)/);
-      if (match !== null) {
-        let level = BumpLevels[match[0]];
-        highestLevel = Math.max(level, highestLevel);
-      }
-      if (headingStartInfo === void 0 && stringified === version2) {
-        headingStartInfo = {
-          index: i,
-          depth: node.depth
-        };
-        continue;
-      }
-      if (endIndex === void 0 && headingStartInfo !== void 0 && headingStartInfo.depth === node.depth) {
-        endIndex = i;
-        break;
-      }
-    }
-  }
-  if (headingStartInfo) {
-    ast.children = ast.children.slice(
-      headingStartInfo.index + 1,
-      endIndex
-    );
-  }
-  return {
-    content: (0, import_unified.default)().use(import_remark_stringify.default).stringify(ast),
-    highestLevel
-  };
-}
 function sortTheThings(a, b) {
-  if (a.private === b.private) {
-    return b.highestLevel - a.highestLevel;
-  }
   if (a.private) {
     return 1;
   }
@@ -36503,9 +36455,7 @@ async function getVersionPrBody({
     messageHeader,
     messagePrestate,
     messageReleasesHeading,
-    ...changedPackagesInfo.map((info3) => `${info3.header}
-
-${info3.content}`)
+    ...changedPackagesInfo.map((info3) => `${info3.header}`)
   ].join("\n");
   if (fullMessage.length > prBodyMaxCharacters) {
     fullMessage = [
@@ -36569,15 +36519,8 @@ async function runVersion({
   let changedPackages = await getChangedPackages(cwd, versionsByDirectory);
   let changedPackagesInfoPromises = Promise.all(
     changedPackages.map(async (pkg) => {
-      let changelogContents = await import_fs_extra.default.readFile(
-        import_path.default.join(pkg.dir, "CHANGELOG.md"),
-        "utf8"
-      );
-      let entry = getChangelogEntry(changelogContents, pkg.packageJson.version);
       return {
-        highestLevel: entry.highestLevel,
         private: !!pkg.packageJson.private,
-        content: entry.content,
         header: `## ${pkg.packageJson.name}@${pkg.packageJson.version}`
       };
     })
