@@ -313,7 +313,7 @@ export async function runVersion({
   githubToken,
   cwd = process.cwd(),
   prTitle = "Release Packages",
-  commitMessage = "Reelase Packages",
+  commitMessage = "Release Packages",
   hasPublishScript = false,
   prBodyMaxCharacters = MAX_CHARACTERS_PER_MESSAGE,
 }: VersionOptions): Promise<RunVersionResult> {
