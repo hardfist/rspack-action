@@ -361,7 +361,7 @@ export async function runVersion({
       return {
         highestLevel: entry.highestLevel,
         private: !!pkg.packageJson.private,
-        content: entry.content,
+        content: "",
         header: `## ${pkg.packageJson.name}@${pkg.packageJson.version}`,
       };
     })
