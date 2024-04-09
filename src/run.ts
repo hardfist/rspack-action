@@ -12,6 +12,7 @@ import {
   getChangedPackages,
   sortTheThings,
   getVersionsByDirectory,
+  BumpLevels,
 } from "./utils";
 import * as gitUtils from "./gitUtils";
 import readChangesetState from "./readChangesetState";
@@ -352,14 +353,14 @@ export async function runVersion({
   let changedPackages = await getChangedPackages(cwd, versionsByDirectory);
   let changedPackagesInfoPromises = Promise.all(
     changedPackages.map(async (pkg) => {
-      let changelogContents = await fs.readFile(
-        path.join(pkg.dir, "CHANGELOG.md"),
-        "utf8"
-      );
+      // let changelogContents = await fs.readFile(
+      //   path.join(pkg.dir, "CHANGELOG.md"),
+      //   "utf8"
+      // );
 
-      let entry = getChangelogEntry(changelogContents, pkg.packageJson.version);
+      //let entry = getChangelogEntry(changelogContents, pkg.packageJson.version);
       return {
-        highestLevel: entry.highestLevel,
+        highestLevel:BumpLevels.minor, // not sure whether it's still useful since we specify bump type in ci
         private: !!pkg.packageJson.private,
         // content: entry.content,
         content: "", // not need for pull request
