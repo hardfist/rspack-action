@@ -215,3 +215,11 @@ If you are using [Yarn Plug'n'Play](https://yarnpkg.com/features/pnp), you shoul
     version: yarn changeset version
     ...
 ```
+
+## Credits
+
+This repository is a fork of the [changesets/action](https://github.com/changesets/action) repository, thanks to the changesets team for their work!
+
+## License
+
+[MIT](./LICENSE).
